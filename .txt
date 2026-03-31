@@ -1,0 +1,5 @@
+Yesterday, I received the project context and spent time understanding the requirements. 
+I also created a clear plan for the tasks and set up my work environment.
+
+This morning, I’m starting with the project diagrams to structure everything properly, 
+and later I’ll move on to the implementation and begin working on the code.
