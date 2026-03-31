@@ -9,7 +9,7 @@ const signinToken = function (id) {
 
 const signup = async (req, res) => {
   try {
-    const nweUser = await User.create({
+    const newUser = await User.create({
       name: req.body.name,
       email: req.body.email,
       // role: req.body.role,
@@ -17,7 +17,7 @@ const signup = async (req, res) => {
       passwordConfirm: req.body.passwordConfirm
     });
 
-    const token = signinToken(nweUser._id);
+    const token = signinToken(newUser._id);
 
     res.status(201).json({
       status: 'success',
@@ -35,5 +35,40 @@ const signup = async (req, res) => {
     });
   };
 };
+
+const login = async (req, res) => {
+  try {
+
+    // 1) check the email and password if exist
+    const { email, password } = req.body
+
+    if (!email || !password) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'please provide an email and password'
+      });
+    };
+    const user = await User.findOne({ email }).select('+password');
+    const correct = await correctPassword(password, user.password);
+
+    if (!user || !correct) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'incorrect email or password!'
+      });
+    };
+
+    const token = signinToken(user._id);
+    res.status(200).json({
+      status: 'success',
+      token
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: err.message
+    });
+  }
+}
 
 export default signup;
