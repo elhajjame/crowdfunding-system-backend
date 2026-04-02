@@ -1,7 +1,7 @@
 import jwt, { decode } from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
-
+import AppError from '../utils/appError.js';
 const signinToken = function (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRED_IN
@@ -45,10 +45,8 @@ const login = catchAsync(async (req, res) => {
     const correct = await user.correctPassword(password, user.password);
 
     if (!user || !correct) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'incorrect email or password!'
-      });
+      return
+      //next(new AppError('incorrect email or password!', 404))
     };
 
     const token = signinToken(user._id);

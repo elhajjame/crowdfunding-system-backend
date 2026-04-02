@@ -43,7 +43,8 @@ const projectSchema = new mongoose.Schema({
   autoClose: {
     type: Boolean,
     default: true
-  }
+  },
+  createdAt: Date,
 });
 
 const Project = mongoose.model('Project', projectSchema);

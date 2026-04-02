@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken'
-const protect = async (res, req, next) => {
+import User from '../models/userModel.js';
+
+const protect = async (req, res, next) => {
   let token, decoded;
 
-  if (req.headers.authorization && req.header.authorization.startsWith('Bearer')) {
-    token = req.header.authorization.split(' ')[1]
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1]
   }
   if (!token) {
     return res.status(401).json({
@@ -29,6 +31,7 @@ const protect = async (res, req, next) => {
     })
   }
   req.user = freshUser;
+  console.log(req.user);
   next()
 };
 
