@@ -1,0 +1,3 @@
+Yesterday, I finished the diagrams for the project and started working on the coding part.
+
+Today, I will continue coding and focus on making more progress on the backend features.

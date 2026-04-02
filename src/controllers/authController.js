@@ -1,5 +1,6 @@
-import jwt from 'jsonwebtoken';
+import jwt, { decode } from 'jsonwebtoken';
 import User from '../models/userModel.js';
+import catchAsync from '../utils/catchAsync.js';
 
 const signinToken = function (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -7,38 +8,30 @@ const signinToken = function (id) {
   });
 };
 
-const signup = async (req, res) => {
+const signup = catchAsync(async (req, res) => {
+
+  const newUser = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    // role: req.body.role,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm
+  });
+
+  const token = signinToken(newUser._id);
+
+  res.status(201).json({
+    status: 'success',
+    token,
+    data: {
+      user: newUser
+    }
+  });
+
+});
+
+const login = catchAsync(async (req, res) => {
   try {
-    const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      // role: req.body.role,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm
-    });
-
-    const token = signinToken(newUser._id);
-
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-        user: newUser
-      }
-    });
-
-  } catch (error) {
-    console.log(error);
-    res.status(404).json({
-      status: 'fail',
-      message: error.message
-    });
-  };
-};
-
-const login = async (req, res) => {
-  try {
-
     // 1) check the email and password if exist
     const { email, password } = req.body
 
@@ -49,7 +42,7 @@ const login = async (req, res) => {
       });
     };
     const user = await User.findOne({ email }).select('+password');
-    const correct = await correctPassword(password, user.password);
+    const correct = await user.correctPassword(password, user.password);
 
     if (!user || !correct) {
       return res.status(404).json({
@@ -66,9 +59,10 @@ const login = async (req, res) => {
   } catch (error) {
     res.status(404).json({
       status: 'fail',
-      message: err.message
+      message: error.message
     });
-  }
-}
+  };
+});
 
-export default signup;
+
+export { signup, login };
