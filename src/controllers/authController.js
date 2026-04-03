@@ -31,35 +31,26 @@ const signup = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  try {
-    // 1) check the email and password if exist
-    const { email, password } = req.body
+  // 1) check the email and password if exist
+  const { email, password } = req.body
 
-    if (!email || !password) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'please provide an email and password'
-      });
-    };
-    const user = await User.findOne({ email }).select('+password');
-    const correct = await user.correctPassword(password, user.password);
-
-    if (!user || !correct) {
-      return
-      //next(new AppError('incorrect email or password!', 404))
-    };
-
-    const token = signinToken(user._id);
-    res.status(200).json({
-      status: 'success',
-      token
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error.message
-    });
+  if (!email || !password) {
+    return next(new AppError('Email and password are required', 400));
   };
+  const user = await User.findOne({ email }).select('+password');
+  console.log('user: ', user);
+  const correct = await user.correctPassword(password, user.password);
+
+  if (!user || !correct) {
+    return next(new AppError('incorrect email or password!', 404))
+  };
+
+  const token = signinToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token
+  });
 });
 
 

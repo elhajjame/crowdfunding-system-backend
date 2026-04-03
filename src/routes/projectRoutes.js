@@ -1,12 +1,16 @@
 import { Router } from "express";
-import { createProject, getAllProjects } from "../controllers/projectController.js";
+import { createProject, deleteProject, getAllProjects, getProject, updateProject, } from "../controllers/projectController.js";
 import protect from "../middlewares/authMiddleware.js";
+import { projectExist } from "../middlewares/projectMiddleware.js";
+import { ownerShip } from "../middlewares/ownerShip.js";
 const router = Router();
 
-// router.use();
+router.use(protect);
 
 router
-  .post('/create-project', protect, createProject)
-  .get('/all-projects', protect, getAllProjects)
-
+  .post('/create-project', createProject)
+  .get('/all', getAllProjects)
+  .get('/get-one/:id', getProject)
+  .put('/update/:id', projectExist, ownerShip, updateProject)
+  .delete('/delete', ownerShip, deleteProject)
 export default router;  
