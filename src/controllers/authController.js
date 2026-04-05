@@ -13,7 +13,8 @@ const signup = catchAsync(async (req, res) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
-    // role: req.body.role,
+    role: req.body.role,
+    balance: req.body.balance,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm
   });
